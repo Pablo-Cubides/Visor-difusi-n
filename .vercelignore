@@ -1,0 +1,14 @@
+# Vercel deployment ignores
+# Only deploy the Next.js frontend
+node_modules/
+.next/
+*.log
+.vscode/
+.idea/
+__pycache__/
+*.pyc
+.git/
+.github/
+
+# Keep frontend committed generated GIFs (frontend/public/static/generated) if you precompute and commit them
+!frontend/public/static/generated/
