@@ -1,3 +1,1 @@
-Case: Gemini AI
-Source model tag: gemini
-Notes: Ultra-realistic 8K scene with person and black horse in snowy mountains. Uses an uploaded face to match identity; intended for study of composition and lighting.
+Escena ultra realista 8K con persona y caballo negro en montañas nevadas. Usa una cara subida para coincidir con la identidad; destinado al estudio de composición e iluminación.

@@ -1,3 +1,1 @@
-Case: stable diffusion 2
-Source model tag: stable-diffusion
-Notes: Photorealistic interrogation room scene with Spanish Policía Nacional officer; used for studying lighting and atmosphere in high-detail images.
+Escena fotorrealista de sala de interrogatorios con oficial de Policía Nacional española; usado para estudiar iluminación y atmósfera en imágenes de alto detalle.

@@ -20,6 +20,19 @@ const promptTranslations: Record<string, string> = {
   'A realistic photo of an interrogation room in a Spanish police station. A Spanish "Policía Nacional" officer in dark blue uniform questions a suspect across a metal table. The room has sparse furniture, concrete walls, a two-way mirror. Dramatic overhead lighting, tense atmosphere, photorealistic, 8k.': 'Una foto realista de una sala de interrogatorios en una comisaría española. Un oficial de la "Policía Nacional" española en uniforme azul oscuro interroga a un sospechoso a través de una mesa metálica. La habitación tiene muebles escasos, paredes de hormigón, un espejo bidireccional. Iluminación dramática desde arriba, atmósfera tensa, fotorrealista, 8k.',
 };
 
+// Modelos y prompts originales
+const caseInfo: Record<string, { model: string; originalPrompt: string }> = {
+  '1': { model: 'Aperture Maxcon', originalPrompt: 'Portrait painting of Spider-Man wearing a gold metallic suit, ultra realistic, concept art, intricate details, eerie, highly detailed, photorealistic, octane render, 8k, unreal engine. art by artgerm and Jim Lee, NYC in the background, Full Body, Night time, photshoot' },
+  '2': { model: 'Aperture Maxcon', originalPrompt: 'Superman flying alongside a plane, this is a selfie, his arm reaching towards the camera, you can see the pilot inside the plane.' },
+  '3': { model: 'Aperture Maxcon', originalPrompt: 'Create a 4K digital photograph of a beautiful young Ukrainian woman with green eyes. She has a mid-length bob hairstyle with blunt, chic, modern edges and face-framing bangs that highlight her golden-brown hair. She is wearing a black midi dress and is posing with her chin down, gazing directly at the camera. The lighting is soft Rembrandt style on her face, with a gentle backlight behind her. The background features a dark red abstract gradient in a studio setting.' },
+  'flux-1': { model: 'Flux 1', originalPrompt: 'The photo: Create a cinematic, photorealistic medium shot capturing the nostalgic warmth of a late 90s indie film.' },
+  'flux-1.1-2': { model: 'Flux 1.1-2', originalPrompt: 'Set in medieval times. A woman is riding a horse down a village street. She is riding away from the viewer. there is a large foreboding castle in the distance. Lightning can be seen streaking across the sky. She has long messy auburn hair. She is wearing dark leather armor. The horse has a saddle and saddle bags. It is raining and there are puddles forming in the dirt. sharp scenery, lush background, ultra-detailed environment, natural textures, vibrant lighting, crisp clouds, realistic water surface, vivid skies, photo-real terrain, fantstyle, MythP0rt, raz\'sscenesmith-mk.1' },
+  'gemini-2': { model: 'Gemini 2', originalPrompt: 'A photorealistic close-up portrait of an elderly Japanese ceramicist with deep, sun-etched wrinkles and a warm, knowing smile. He is carefully inspecting a freshly glazed tea bowl. The setting is his rustic, sun-drenched workshop. The scene is illuminated by soft, golden hour light streaming through a window, highlighting the fine texture of the clay. Captured with an 85mm portrait lens, resulting in a soft, blurred background (bokeh). The overall mood is serene and masterful. Vertical portrait orientation.' },
+  'gemini-ai': { model: 'Gemini AI', originalPrompt: 'Ultra realistic, 8K resolution cinematic image of a person crouching beside a powerful black horse in a snow-covered mountainous landscape. Face with the face from the uploaded image, keeping the facial features exactly the same. Wavy hair, and wears dark sunglasses, a cozy black sweater, grey cargo pants, and black boots. He crouches with one knee bent, holding the reins of the horse with a relaxed yet confident posture. The horse is muscular, with a glossy jet-black coat, flowing mane, and expressive eyes, wearing a simple leather halter. Snow blankets the ground with footprints and scattered rocks visible. In the background, soft-focus snow-covered hills, pine trees, and distant mountain peaks stretch under a clear blue sky. Snowflakes gently fall around them, adding depth and softness to the scene. The lighting is soft and natural, highlighting details like the texture of the snow, fabric folds, and hair strands. The overall mood is calm, adventurous, and majestic, evoking a sense of freedom and harmony with nature.' },
+  'stable-diffusion': { model: 'Stable Diffusion', originalPrompt: 'Magazine cover. Polestar 4, employee of the month. Running over MGroup' },
+  'stable-diffusion-2': { model: 'Stable Diffusion 2', originalPrompt: 'A realistic photo of an interrogation room in a Spanish police station. A Spanish "Policía Nacional" officer in dark blue uniform questions a suspect across a metal table. The room has sparse furniture, concrete walls, a two-way mirror. Dramatic overhead lighting, tense atmosphere, photorealistic, 8k.' },
+};
+
 // Nota sobre optimización de imágenes:
 // Las imágenes en esta aplicación son datos base64 generados dinámicamente
 // desde las APIs serverless, no URLs estáticas. Por esta razón, no se puede
@@ -52,6 +65,10 @@ export default function Home() {
 
   // --- ESTADO PARA EL PROMPT SELECCIONADO ---
   const [selectedPromptText, setSelectedPromptText] = useState<string>('');
+
+  // --- ESTADOS PARA EL PANEL INFERIOR ---
+  const [selectedModel, setSelectedModel] = useState<string>('');
+  const [selectedOriginalPrompt, setSelectedOriginalPrompt] = useState<string>('');
 
   useEffect(() => {
     const fetchPrompts = async () => {
@@ -143,7 +160,7 @@ export default function Home() {
   const asDataUrl = img && img.startsWith && img.startsWith('data:') ? img : `data:image/png;base64,${img}`;
   setNoiseImage(asDataUrl);
   setIntermediateImage(asDataUrl);
-      setEducationalText(data.educational_text + "\n\nPrompt: " + (promptTranslations[selectedPromptText] || selectedPromptText));
+      setEducationalText(data.educational_text);
       setCurrentStep(1);
       console.log('Simulation started successfully, currentStep set to 1');
     } catch (err: any) {
@@ -170,7 +187,7 @@ export default function Home() {
   const img = data.intermediate_image;
   const asDataUrl = img && img.startsWith && img.startsWith('data:') ? img : `data:image/png;base64,${img}`;
   setIntermediateImage(asDataUrl);
-  setEducationalText(data.educational_text + "\n\nPrompt: " + (promptTranslations[selectedPromptText] || selectedPromptText));
+  setEducationalText(data.educational_text);
       
       const finished = data.is_finished;
       setIsFinished(finished);
@@ -247,7 +264,7 @@ export default function Home() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
             {prompts.map(prompt => (
-              <div key={prompt.id} onClick={() => { if (currentStep === 0) { setSelectedPromptId(prompt.id); setSelectedPromptText(prompt.prompt); } }}
+              <div key={prompt.id} onClick={() => { if (currentStep === 0) { setSelectedPromptId(prompt.id); setSelectedPromptText(prompt.prompt); setSelectedModel(caseInfo[prompt.id]?.model || ''); setSelectedOriginalPrompt(caseInfo[prompt.id]?.originalPrompt || ''); } }}
                    className={`p-4 border rounded-lg cursor-pointer transition-all ${selectedPromptId === prompt.id ? 'border-primary-DEFAULT ring-2 ring-primary-DEFAULT bg-blue-50' : 'border-border hover:border-gray-400'} ${currentStep > 0 ? 'cursor-not-allowed opacity-60' : ''}`}>
                 <h3 className="font-bold text-lg text-primary-DEFAULT line-clamp-2">{prompt.title}</h3>
                 <p className="text-sm text-gray-600 mb-2 mt-2">{prompt.description}</p>
@@ -262,7 +279,7 @@ export default function Home() {
         <div className="flex gap-2 flex-wrap justify-center items-center">
           <h3 className='text-xl font-semibold mr-4'>2. Controla la Simulación</h3>
           <button onClick={handleStartSimulation} disabled={isLoading || currentStep > 0 || !selectedPromptId} className="bg-primary-DEFAULT text-primary-foreground px-4 py-2 rounded-md hover:bg-opacity-90 disabled:bg-gray-400">{isLoading && currentStep === 0 ? 'Iniciando...' : 'Iniciar Simulación'}</button>
-          <button onClick={handleNextStep} disabled={isLoading || !selectedPromptId || isFinished || currentStep === 0} className="bg-secondary-DEFAULT text-secondary-foreground px-4 py-2 rounded-md hover:bg-gray-200 disabled:bg-gray-400">{isLoading && !!selectedPromptId ? 'Procesando...' : `Siguiente Paso (${currentStep}/${TOTAL_STEPS})`}</button>
+          <button onClick={handleNextStep} disabled={isLoading || !selectedPromptId || isFinished || currentStep === 0} className="bg-secondary-DEFAULT text-secondary-foreground px-4 py-2 rounded-md hover:bg-gray-200 disabled:bg-gray-400">{isLoading && !!selectedPromptId ? 'Procesando...' : `Siguiente Paso (${Math.min(currentStep, TOTAL_STEPS)}/${TOTAL_STEPS})`}</button>
           <button onClick={handleReset} className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">Reiniciar</button>
           <button onClick={handleExport} disabled={!isFinished || isExporting} className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:bg-gray-400">{isExporting ? 'Generando...' : 'Descargar GIF'}</button>
         </div>
@@ -315,7 +332,7 @@ export default function Home() {
 
         <div className="panel bg-card border border-border p-4 rounded-lg shadow-sm flex flex-col">
           <h2 className="text-xl font-semibold mb-3 text-primary-DEFAULT">Explicación del Paso</h2>
-          <EducationalPanel text={educationalText} />
+          <EducationalPanel upperText={educationalText} lowerText={`Modelo usado: ${selectedModel}\n\nPrompt original: ${selectedOriginalPrompt}`} />
         </div>
       </main>
 
