@@ -7,6 +7,19 @@ import EducationalPanel from '@/components/EducationalPanel';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? '' : 'http://localhost:3000');
 const TOTAL_STEPS = 10;
 
+// Traducciones de prompts al español
+const promptTranslations: Record<string, string> = {
+  'Portrait painting of Spider-Man wearing a gold metallic suit, ultra realistic, concept art, intricate details, eerie, highly detailed, photorealistic, octane render, 8k, unreal engine. art by artgerm and Jim Lee, NYC in the background, Full Body, Night time, photshoot': 'Retrato pictórico de Spider-Man con traje metálico dorado, ultra realista, arte conceptual, detalles intrincados, siniestro, altamente detallado, fotorrealista, renderizado octane, 8k, motor unreal. arte de artgerm y Jim Lee, Nueva York al fondo, cuerpo completo, noche, sesión de fotos.',
+  'Superman flying alongside a plane, this is a selfie, his arm reaching towards the camera, you can see the pilot inside the plane.': 'Superman volando junto a un avión, esto es un selfie, su brazo extendiéndose hacia la cámara, puedes ver al piloto dentro del avión.',
+  'Create a 4K digital photograph of a beautiful young Ukrainian woman with green eyes. She has a mid-length bob hairstyle with blunt, chic, modern edges and face-framing bangs that highlight her golden-brown hair. She is wearing a black midi dress and is posing with her chin down, gazing directly at the camera. The lighting is soft Rembrandt style on her face, with a gentle backlight behind her. The background features a dark red abstract gradient in a studio setting.': 'Crear una fotografía digital 4K de una hermosa joven ucraniana con ojos verdes. Tiene un peinado bob de longitud media con bordes romos, chic, modernos y flequillo que enmarca la cara destacando su cabello dorado-marrón. Lleva un vestido midi negro y posa con la barbilla baja, mirando directamente a la cámara. La iluminación es estilo Rembrandt suave en su cara, con una luz de fondo suave detrás. El fondo presenta un gradiente abstracto rojo oscuro en un estudio.',
+  'The photo: Create a cinematic, photorealistic medium shot capturing the nostalgic warmth of a late 90s indie film.': 'La foto: Crear un plano medio cinematográfico, fotorrealista capturando el calor nostálgico de una película indie de finales de los 90.',
+  'Set in medieval times. A woman is riding a horse down a village street. She is riding away from the viewer. there is a large foreboding castle in the distance. Lightning can be seen streaking across the sky. She has long messy auburn hair. She is wearing dark leather armor. The horse has a saddle and saddle bags. It is raining and there are puddles forming in the dirt. sharp scenery, lush background, ultra-detailed environment, natural textures, vibrant lighting, crisp clouds, realistic water surface, vivid skies, photo-real terrain, fantstyle, MythP0rt, raz\'sscenesmith-mk.1': 'Ambientado en tiempos medievales. Una mujer está montando a caballo por una calle del pueblo. Está cabalgando alejándose del espectador. Hay un gran castillo amenazante en la distancia. Se puede ver relámpagos rayando el cielo. Tiene cabello largo despeinado castaño rojizo. Lleva armadura de cuero oscura. El caballo tiene silla de montar y alforjas. Está lloviendo y se están formando charcos en la tierra. paisaje nítido, fondo exuberante, entorno ultra detallado, texturas naturales, iluminación vibrante, nubes nítidas, superficie de agua realista, cielos vívidos, terreno fotorreal, estilo fant, MythP0rt, raz\'sscenesmith-mk.1.',
+  'A photorealistic close-up portrait of an elderly Japanese ceramicist with deep, sun-etched wrinkles and a warm, knowing smile. He is carefully inspecting a freshly glazed tea bowl. The setting is his rustic, sun-drenched workshop. The scene is illuminated by soft, golden hour light streaming through a window, highlighting the fine texture of the clay. Captured with an 85mm portrait lens, resulting in a soft, blurred background (bokeh). The overall mood is serene and masterful. Vertical portrait orientation.': 'Un retrato fotorrealista en primer plano de un anciano ceramista japonés con profundas arrugas grabadas por el sol y una sonrisa cálida y sabia. Está inspeccionando cuidadosamente un tazón de té recién esmaltado. El escenario es su taller rústico bañado por el sol. La escena está iluminada por una luz suave de hora dorada que entra por una ventana, destacando la fina textura de la arcilla. Capturado con una lente de retrato de 85mm, resultando en un fondo suave y borroso (bokeh). El estado de ánimo general es sereno y magistral. Orientación vertical del retrato.',
+  'Ultra realistic, 8K resolution cinematic image of a person crouching beside a powerful black horse in a snow-covered mountainous landscape. Face with the face from the uploaded image, keeping the facial features exactly the same. Wavy hair, and wears dark sunglasses, a cozy black sweater, grey cargo pants, and black boots. He crouches with one knee bent, holding the reins of the horse with a relaxed yet confident posture. The horse is muscular, with a glossy jet-black coat, flowing mane, and expressive eyes, wearing a simple leather halter. Snow blankets the ground with footprints and scattered rocks visible. In the background, soft-focus snow-covered hills, pine trees, and distant mountain peaks stretch under a clear blue sky. Snowflakes gently fall around them, adding depth and softness to the scene. The lighting is soft and natural, highlighting details like the texture of the snow, fabric folds, and hair strands. The overall mood is calm, adventurous, and majestic, evoking a sense of freedom and harmony with nature.': 'Imagen cinematográfica ultra realista, resolución 8K de una persona agachada junto a un poderoso caballo negro en un paisaje montañoso cubierto de nieve. Cara con la cara de la imagen subida, manteniendo las características faciales exactamente iguales. Cabello ondulado, y lleva gafas de sol oscuras, un suéter negro cómodo, pantalones cargo grises y botas negras. Se agacha con una rodilla doblada, sosteniendo las riendas del caballo con una postura relajada pero confiada. El caballo es musculoso, con un pelaje negro brillante, crin fluida y ojos expresivos, llevando un cabestro de cuero simple. La nieve cubre el suelo con huellas y rocas dispersas visibles. Al fondo, colinas cubiertas de nieve en foco suave, pinos y picos montañosos distantes se extienden bajo un cielo azul claro. Copos de nieve caen suavemente a su alrededor, añadiendo profundidad y suavidad a la escena. La iluminación es suave y natural, destacando detalles como la textura de la nieve, pliegues de tela y mechones de cabello. El estado de ánimo general es calmado, aventurero y majestuoso, evocando un sentido de libertad y armonía con la naturaleza.',
+  'Magazine cover. Polestar 4, employee of the month. Running over MGroup': 'Portada de revista. Polestar 4, empleado del mes. Corriendo sobre MGroup.',
+  'A realistic photo of an interrogation room in a Spanish police station. A Spanish "Policía Nacional" officer in dark blue uniform questions a suspect across a metal table. The room has sparse furniture, concrete walls, a two-way mirror. Dramatic overhead lighting, tense atmosphere, photorealistic, 8k.': 'Una foto realista de una sala de interrogatorios en una comisaría española. Un oficial de la "Policía Nacional" española en uniforme azul oscuro interroga a un sospechoso a través de una mesa metálica. La habitación tiene muebles escasos, paredes de hormigón, un espejo bidireccional. Iluminación dramática desde arriba, atmósfera tensa, fotorrealista, 8k.',
+};
+
 // Nota sobre optimización de imágenes:
 // Las imágenes en esta aplicación son datos base64 generados dinámicamente
 // desde las APIs serverless, no URLs estáticas. Por esta razón, no se puede
@@ -36,6 +49,9 @@ export default function Home() {
   // --- ESTADO PARA LA IMAGEN DE RUIDO TRANSPARENTE ---
   const [noiseOverlayImage, setNoiseOverlayImage] = useState<string | null>(null);
   const [overlayOpacity, setOverlayOpacity] = useState<number>(0.3);
+
+  // --- ESTADO PARA EL PROMPT SELECCIONADO ---
+  const [selectedPromptText, setSelectedPromptText] = useState<string>('');
 
   useEffect(() => {
     const fetchPrompts = async () => {
@@ -127,7 +143,7 @@ export default function Home() {
   const asDataUrl = img && img.startsWith && img.startsWith('data:') ? img : `data:image/png;base64,${img}`;
   setNoiseImage(asDataUrl);
   setIntermediateImage(asDataUrl);
-      setEducationalText(data.educational_text);
+      setEducationalText(data.educational_text + "\n\nPrompt: " + (promptTranslations[selectedPromptText] || selectedPromptText));
       setCurrentStep(1);
       console.log('Simulation started successfully, currentStep set to 1');
     } catch (err: any) {
@@ -154,7 +170,7 @@ export default function Home() {
   const img = data.intermediate_image;
   const asDataUrl = img && img.startsWith && img.startsWith('data:') ? img : `data:image/png;base64,${img}`;
   setIntermediateImage(asDataUrl);
-  setEducationalText(data.educational_text);
+  setEducationalText(data.educational_text + "\n\nPrompt: " + (promptTranslations[selectedPromptText] || selectedPromptText));
       
       const finished = data.is_finished;
       setIsFinished(finished);
@@ -162,6 +178,7 @@ export default function Home() {
       if (!finished) {
         setCurrentStep(s => s + 1);
       } else {
+        setCurrentStep(TOTAL_STEPS + 1);
         // Asegurarse de que el ruido desaparezca en el último paso
         setNoiseOverlayImage(null);
       }
@@ -230,9 +247,9 @@ export default function Home() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
             {prompts.map(prompt => (
-              <div key={prompt.id} onClick={() => currentStep === 0 && setSelectedPromptId(prompt.id)}
+              <div key={prompt.id} onClick={() => { if (currentStep === 0) { setSelectedPromptId(prompt.id); setSelectedPromptText(prompt.prompt); } }}
                    className={`p-4 border rounded-lg cursor-pointer transition-all ${selectedPromptId === prompt.id ? 'border-primary-DEFAULT ring-2 ring-primary-DEFAULT bg-blue-50' : 'border-border hover:border-gray-400'} ${currentStep > 0 ? 'cursor-not-allowed opacity-60' : ''}`}>
-                <h3 className="font-bold text-lg text-primary-DEFAULT line-clamp-3">{prompt.prompt}</h3>
+                <h3 className="font-bold text-lg text-primary-DEFAULT line-clamp-2">{prompt.title}</h3>
                 <p className="text-sm text-gray-600 mb-2 mt-2">{prompt.description}</p>
               </div>
             ))}

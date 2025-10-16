@@ -1,0 +1,3 @@
+Case: flux 1
+Source model tag: flux
+Notes: Cinematic, photorealistic medium shot with a nostalgic late-90s indie film aesthetic.

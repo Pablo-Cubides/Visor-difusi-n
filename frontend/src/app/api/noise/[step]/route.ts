@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
-const STATIC_NOISE_DIR = path.join(process.cwd(), 'public', 'static');
+// noise images live under public/static/noise/noise_step_X.png
+const STATIC_NOISE_DIR = path.join(process.cwd(), 'public', 'static', 'noise');
 
 export async function GET(
   request: NextRequest,

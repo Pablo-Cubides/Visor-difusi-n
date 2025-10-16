@@ -79,13 +79,16 @@ export async function POST(request: NextRequest) {
       normalizedStep = caseData.total_steps;
     }
 
-    const stepImage = loadStepImageB64(prompt_id, normalizedStep);
+  const stepImage = loadStepImageB64(prompt_id, normalizedStep);
+  // Public URL for the step image (if files are served from /static)
+  const intermediateImageUrl = `/static/cases/${prompt_id}/step_${normalizedStep}.png`;
     const educationalText = EDUCATIONAL_TEXTS[normalizedStep] || `Step ${normalizedStep}: progressing`;
     const isFinished = caseData.total_steps > 0 && normalizedStep >= caseData.total_steps;
 
     return NextResponse.json({
       step: normalizedStep,
       intermediate_image: stepImage,
+      intermediate_image_url: intermediateImageUrl,
       educational_text: educationalText,
       is_finished: isFinished,
       total_steps: caseData.total_steps,

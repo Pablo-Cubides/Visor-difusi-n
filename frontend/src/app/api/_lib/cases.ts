@@ -5,11 +5,24 @@ export interface CaseData {
   id: string;
   prompt: string;
   description: string;
+  title: string;
   step_files: string[];
   total_steps: number;
 }
 
 const STATIC_CASES_DIR = path.join(process.cwd(), 'public', 'static', 'cases');
+
+const shortTitles: Record<string, string> = {
+  '1': 'Spider-Man Dorado',
+  '2': 'Superman y Avión',
+  '3': 'Retrato de Mujer',
+  'flux-1': 'Cine de los 90s',
+  'flux-1.1-2': 'Caballera Medieval',
+  'gemini-2': 'Ceramista Japonés',
+  'gemini-ai': 'Hombre con Caballo',
+  'stable-diffusion': 'Polestar 4 Portada',
+  'stable-diffusion-2': 'Sala de Interrogatorio',
+};
 
 export function loadDynamicCases(): Record<string, CaseData> {
   const cases: Record<string, CaseData> = {};
@@ -54,6 +67,7 @@ export function loadDynamicCases(): Record<string, CaseData> {
         id: caseId,
         prompt,
         description: description || `Caso educativo: ${prompt.slice(0, 100)}...`,
+        title: shortTitles[caseId] || `Caso ${caseId}`,
         step_files: stepFiles,
         total_steps: stepFiles.length,
       };
