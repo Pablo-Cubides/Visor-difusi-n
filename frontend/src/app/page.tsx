@@ -245,29 +245,47 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col p-4 sm:p-6 lg:p-8 font-sans">
-      <header className="text-center mb-4">
-        <h1 className="text-4xl font-bold text-primary-DEFAULT">Visor del Proceso de Difusión</h1>
-        <p className="text-lg text-gray-600 mt-2">Una herramienta educativa para visualizar la generación de imágenes paso a paso.</p>
+    <div className="min-h-screen bg-[#0A0E27] text-[#FFFFFF] flex flex-col p-4 sm:p-6 lg:p-8 font-sans">
+      <header className="text-center mb-8">
+        <h1 className="text-5xl font-bold bg-gradient-to-r from-[#00D4FF] via-[#00FF88] to-[#FFB700] bg-clip-text text-transparent drop-shadow-lg">Visor del Proceso de Difusión</h1>
+        <p className="text-lg text-[#E8F0FF] mt-3 max-w-2xl mx-auto">Una herramienta educativa para visualizar cómo la IA genera imágenes mediante el proceso de difusión, paso a paso.</p>
       </header>
 
-      {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md mb-4"><b>Error:</b> {error}</div>}
+      {error && (
+        <div className="bg-[#FF3366]/20 border border-[#FF3366] text-[#FF3366] px-4 py-3 rounded-lg mb-6 max-w-2xl mx-auto w-full">
+          <b>Error:</b> {error}
+        </div>
+      )}
 
       {/* --- SELECCIÓN DE PROMPT --- */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-semibold text-center mb-4">1. Selecciona un Prompt Educativo</h2>
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold text-center mb-6 text-[#FFFFFF]">1. Selecciona un Prompt Educativo</h2>
         {promptsLoading ? (
-          <div className="flex justify-center items-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-DEFAULT"></div>
-            <span className="ml-2 text-gray-600">Cargando casos educativos...</span>
+          <div className="flex justify-center items-center py-12">
+            <div className="spinner"></div>
+            <span className="ml-3 text-[#E8F0FF]">Cargando casos educativos...</span>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
             {prompts.map(prompt => (
-              <div key={prompt.id} onClick={() => { if (currentStep === 0) { setSelectedPromptId(prompt.id); setSelectedPromptText(prompt.prompt); setSelectedModel(caseInfo[prompt.id]?.model || ''); setSelectedOriginalPrompt(caseInfo[prompt.id]?.originalPrompt || ''); } }}
-                   className={`p-4 border rounded-lg cursor-pointer transition-all ${selectedPromptId === prompt.id ? 'border-primary-DEFAULT ring-2 ring-primary-DEFAULT bg-blue-50' : 'border-border hover:border-gray-400'} ${currentStep > 0 ? 'cursor-not-allowed opacity-60' : ''}`}>
-                <h3 className="font-bold text-lg text-primary-DEFAULT line-clamp-2">{prompt.title}</h3>
-                <p className="text-sm text-gray-600 mb-2 mt-2">{prompt.description}</p>
+              <div 
+                key={prompt.id} 
+                onClick={() => { 
+                  if (currentStep === 0) { 
+                    setSelectedPromptId(prompt.id); 
+                    setSelectedPromptText(prompt.prompt); 
+                    setSelectedModel(caseInfo[prompt.id]?.model || ''); 
+                    setSelectedOriginalPrompt(caseInfo[prompt.id]?.originalPrompt || ''); 
+                  } 
+                }}
+                className={`glass p-4 cursor-pointer transition-all transform hover:scale-105 ${
+                  selectedPromptId === prompt.id 
+                    ? 'border-[#00D4FF] ring-2 ring-[#00D4FF]/70 bg-[#00D4FF]/10' 
+                    : 'hover:border-[#00D4FF]/70 hover:bg-[#00D4FF]/5'
+                } ${currentStep > 0 ? 'cursor-not-allowed opacity-50' : ''}`}
+              >
+                <h3 className="font-bold text-lg text-[#00D4FF] line-clamp-2">{prompt.title}</h3>
+                <p className="text-sm text-[#E8F0FF] mb-2 mt-2">{prompt.description}</p>
               </div>
             ))}
           </div>
@@ -275,70 +293,105 @@ export default function Home() {
       </div>
 
       {/* --- CONTROLES PRINCIPALES --- */}
-      <div className="bg-card border border-border p-4 rounded-lg shadow-sm mb-6 flex flex-col gap-4">
-        <div className="flex gap-2 flex-wrap justify-center items-center">
-          <h3 className='text-xl font-semibold mr-4'>2. Controla la Simulación</h3>
-          <button onClick={handleStartSimulation} disabled={isLoading || currentStep > 0 || !selectedPromptId} className="bg-primary-DEFAULT text-primary-foreground px-4 py-2 rounded-md hover:bg-opacity-90 disabled:bg-gray-400">{isLoading && currentStep === 0 ? 'Iniciando...' : 'Iniciar Simulación'}</button>
-          <button onClick={handleNextStep} disabled={isLoading || !selectedPromptId || isFinished || currentStep === 0} className="bg-secondary-DEFAULT text-secondary-foreground px-4 py-2 rounded-md hover:bg-gray-200 disabled:bg-gray-400">{isLoading && !!selectedPromptId ? 'Procesando...' : `Siguiente Paso (${Math.min(currentStep, TOTAL_STEPS)}/${TOTAL_STEPS})`}</button>
-          <button onClick={handleReset} className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">Reiniciar</button>
-          <button onClick={handleExport} disabled={!isFinished || isExporting} className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:bg-gray-400">{isExporting ? 'Generando...' : 'Descargar GIF'}</button>
+      <div className="glass mb-8 flex flex-col gap-4 max-w-4xl mx-auto w-full">
+        <div className="flex gap-3 flex-wrap justify-center items-center">
+          <h3 className='text-xl font-semibold text-[#FFFFFF]'>2. Controla la Simulación</h3>
+          <button 
+            onClick={handleStartSimulation} 
+            disabled={isLoading || currentStep > 0 || !selectedPromptId} 
+            className="button-primary min-w-max"
+            aria-label="Iniciar simulación de generación de imágenes con IA"
+          >
+            {isLoading && currentStep === 0 ? (
+              <>
+                <span className="spinner mr-2"></span>
+                Iniciando...
+              </>
+            ) : 'Iniciar Simulación'}
+          </button>
+          <button 
+            onClick={handleNextStep} 
+            disabled={isLoading || !selectedPromptId || isFinished || currentStep === 0} 
+            className="button-secondary min-w-max"
+            aria-label="Avanzar al siguiente paso del proceso de difusión"
+          >
+            {isLoading && !!selectedPromptId ? (
+              <>
+                <span className="spinner mr-2"></span>
+                Procesando...
+              </>
+            ) : `Siguiente (${Math.min(currentStep, TOTAL_STEPS)}/${TOTAL_STEPS})`}
+          </button>
+          <button 
+            onClick={handleReset} 
+            className="button-secondary min-w-max"
+            aria-label="Reiniciar la simulación"
+          >
+            Reiniciar
+          </button>
+          <button 
+            onClick={handleExport} 
+            disabled={!isFinished || isExporting} 
+            className="px-4 py-2 bg-[#00FF88] text-[#0A0E27] rounded-lg font-semibold hover:bg-[#33FFAA] transition-all duration-200 hover:shadow-lg hover:shadow-[#00FF88]/70 disabled:opacity-50 disabled:cursor-not-allowed min-w-max"
+            aria-label="Descargar la animación de difusión como archivo GIF"
+          >
+            {isExporting ? (
+              <>
+                <span className="spinner mr-2"></span>
+                Generando...
+              </>
+            ) : '⬇️ Descargar GIF'}
+          </button>
         </div>
       </div>
 
       {/* --- PANELES DE VISUALIZACIÓN --- */}
-      <main className="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="panel bg-card border border-border p-4 rounded-lg shadow-sm flex flex-col">
-          <h2 className="text-xl font-semibold mb-3 text-primary-DEFAULT">Ruido Inicial y Timestep</h2>
-          <div className="flex-grow bg-gray-200 rounded-md flex items-center justify-center aspect-square">
+      <main className="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="card flex flex-col">
+          <h2 className="text-xl font-semibold mb-4 text-[#00D4FF]">Ruido Inicial</h2>
+          <div className="flex-grow bg-[#0F1629] rounded-lg flex items-center justify-center aspect-square overflow-hidden">
             {noiseImage ? (
-              // Nota: Se usa <img> en lugar de <Image> porque las imágenes son datos base64
-              // generados dinámicamente desde las APIs, no URLs estáticas optimizables
               <img src={noiseImage} alt="Ruido Inicial" className="w-full h-full object-contain"/>
             ) : (
-              <p className="text-gray-500">Esperando simulación...</p>
+              <p className="text-[#E8F0FF]">Esperando simulación...</p>
             )}
           </div>
-          <p className="mt-3 text-center text-gray-600">Timestep: {currentStep > 0 ? Math.max(0, currentStep - 1) : 'N/A'}</p>
+          <p className="mt-4 text-center text-[#B0C4FF] text-sm">Timestep: {currentStep > 0 ? Math.max(0, currentStep - 1) : 'N/A'}</p>
         </div>
 
-        <div className="panel bg-card border border-border p-4 rounded-lg shadow-sm flex flex-col">
-          <h2 className="text-xl font-semibold mb-3 text-primary-DEFAULT">Proceso de Difusión</h2>
-          <div className="flex-grow bg-gray-200 rounded-md flex items-center justify-center aspect-square relative">
-            {/* --- VISOR CON CAPA DE RUIDO TRANSPARENTE --- */}
+        <div className="card flex flex-col">
+          <h2 className="text-xl font-semibold mb-4 text-[#00D4FF]">Proceso de Difusión</h2>
+          <div className="flex-grow bg-[#0F1629] rounded-lg flex items-center justify-center aspect-square relative overflow-hidden">
             {intermediateImage ? (
               <>
-                {/* Nota: Se usa <img> porque las imágenes son datos base64 dinámicos */}
-                <img src={intermediateImage} alt={`Paso ${currentStep - 1}`} className="absolute top-0 left-0 w-full h-full object-contain rounded-md"/>
+                <img src={intermediateImage} alt={`Paso ${currentStep - 1}`} className="absolute top-0 left-0 w-full h-full object-contain"/>
                 {noiseOverlayImage && (
-                  <>
-                    {/* Nota: Imágenes de overlay también son datos dinámicos */}
-                    <img
-                      src={noiseOverlayImage}
-                      alt="Capa de ruido"
-                      className="absolute top-0 left-0 w-full h-full object-contain pointer-events-none rounded-md"
-                      style={{ opacity: overlayOpacity }}
-                    />
-                  </>
+                  <img
+                    src={noiseOverlayImage}
+                    alt="Capa de ruido"
+                    className="absolute top-0 left-0 w-full h-full object-contain pointer-events-none"
+                    style={{ opacity: overlayOpacity }}
+                  />
                 )}
               </>
             ) : (
-              <p className="text-gray-500">Esperando el primer paso...</p>
+              <p className="text-[#E8F0FF]">Esperando el primer paso...</p>
             )}
           </div>
-          <p className="mt-3 text-center text-gray-600">
-            Paso Actual: {currentStep > 0 ? `${Math.max(0, currentStep - 1)} / ${TOTAL_STEPS}` : 'N/A'}
+          <p className="mt-4 text-center text-[#B0C4FF] text-sm">
+            Paso: {currentStep > 0 ? `${Math.max(0, currentStep - 1)}/${TOTAL_STEPS}` : 'N/A'}
           </p>
         </div>
 
-        <div className="panel bg-card border border-border p-4 rounded-lg shadow-sm flex flex-col">
-          <h2 className="text-xl font-semibold mb-3 text-primary-DEFAULT">Explicación del Paso</h2>
-          <EducationalPanel upperText={educationalText} lowerText={`Modelo usado: ${selectedModel}\n\nPrompt original: ${selectedOriginalPrompt}`} />
+        <div className="card flex flex-col">
+          <h2 className="text-xl font-semibold mb-4 text-[#00D4FF]">Explicación del Paso</h2>
+          <EducationalPanel upperText={educationalText} lowerText={`Modelo: ${selectedModel}\n\nPrompt: ${selectedOriginalPrompt}`} />
         </div>
       </main>
 
-      <footer className="text-center mt-8">
-        <p className="text-sm text-amber-700 bg-amber-100 border border-amber-300 rounded-md px-4 py-2 max-w-2xl mx-auto">
-          Nota: Esta es una simulación educativa que demuestra cómo los modelos de difusión mejoran gradualmente la calidad de imagen.
+      <footer className="text-center">
+        <p className="text-sm text-[#FFB700] bg-[#FFB700]/10 border border-[#FFB700]/30 rounded-lg px-4 py-3 max-w-2xl mx-auto">
+          ℹ️ Esta es una simulación educativa que demuestra cómo los modelos de difusión generan imágenes mejorando progresivamente la calidad.
         </p>
       </footer>
     </div>
