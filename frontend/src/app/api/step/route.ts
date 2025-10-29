@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { loadDynamicCases } from '../_lib/cases';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 interface StepRequest {
   prompt_id: string;
@@ -65,6 +66,26 @@ const predefinedCases = loadDynamicCases();
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting: máximo 100 requests por hora
+    const headers = request.headers ? Object.fromEntries(request.headers.entries()) : {};
+    const ip = getClientIp(headers);
+    const rateLimit = checkRateLimit(ip, {
+      interval: 3600000, // 1 hora
+      maxRequests: 100,
+    });
+
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Demasiadas solicitudes. Intenta de nuevo en ' + rateLimit.retryAfter + ' segundos.' },
+        { 
+          status: 429,
+          headers: {
+            'Retry-After': rateLimit.retryAfter.toString(),
+          }
+        }
+      );
+    }
+
     const body: StepRequest = await request.json();
     const { prompt_id, step } = body;
 
